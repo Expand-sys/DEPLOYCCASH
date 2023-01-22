@@ -1,5 +1,5 @@
 # DEPLOYCCASH
-#Ansible
+# Ansible
 
 CCash can be deployed to any infrastructure able to run Rocky/Alma Linux 8/9 x86_64 virtual or not, we will be eventually updating it to allow it to run on other OS's but for now RHEL is what works.
 

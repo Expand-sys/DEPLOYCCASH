@@ -154,7 +154,7 @@
     - name: Create .env file
       ansible.builtin.copy:
         content: |
-          BANKAPIURL={{ ansible_facts["all_ipv4_addresses"][0] }}
+          BANKAPIURL=http://127.0.0.1:{{ CCASH_PORT }}
           SECURE=true
           SETUP=true
           PORT={{ WEB_PORT }}
@@ -201,7 +201,12 @@
     - name: Allow firewalld ports
       ansible.posix.firewalld:
         permanent: true
-        port: 443/tcp
+        port: '{{ CCASH_PORT }}/tcp'
+        state: enabled
+    - name: Allow firewalld ports
+      ansible.posix.firewalld:
+        permanent: true
+        port: '{{ CCASH_PORT_S }}/tcp'
         state: enabled
 
     - name: Allow firewalld ports

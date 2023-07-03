@@ -11,11 +11,6 @@
 
 
   tasks:
-    - name: Refresh packages update
-      ansible.builtin.yum:
-        name: "*"
-        update_cache: true
-
     - name: Add repository
       ansible.builtin.yum:
         name: epel-release
@@ -127,7 +122,7 @@
       ansible.builtin.command:
         chdir: '{{ BUILD_DIR }}/CCash/build'
         cmd: './bank {{ ADMIN_A }} {{ SAVE_FREQ }} true'
-      when: START_SERVICES = true
+      when: START_SERVICES == true
 
     - name: Clone Web
       ansible.builtin.git:
@@ -135,26 +130,26 @@
         dest: '{{ BUILD_DIR }}/CCash/web'
         update: true
         force: true
-      when: WEB_ENABLED = true
+      when: WEB_ENABLED == true
 
     - name: "Install Nodejs 18 module"
       ansible.builtin.command: dnf module install -y nodejs:18/common
       register: result
       changed_when:
         - '"Enabling module streams" in result.stdout'
-      when: ansible_os_family = "RedHat" and WEB_ENABLED = true
+      when: ansible_os_family == "RedHat" and WEB_ENABLED == true
 
     - name: Install pm2
       community.general.npm:
         path: '{{ BUILD_DIR }}/CCash/web'
         name: pm2
         global: true
-      when: WEB_ENABLED = true
+      when: WEB_ENABLED == true
 
     - name: Install web dependencies
       community.general.npm:
         path: '{{ BUILD_DIR }}/CCash/web'
-      when: WEB_ENABLED = true
+      when: WEB_ENABLED == true
 
     - name: Create .env file
       ansible.builtin.copy:
@@ -165,7 +160,7 @@
           PORT={{ WEB_PORT }}
         dest: '{{ BUILD_DIR }}/CCash/web/.env'
         mode: 0700
-      when: WEB_ENABLED = true
+      when: WEB_ENABLED == true
 
     - name: Create pm2 file
       ansible.builtin.copy:
@@ -178,7 +173,7 @@
           }
         dest: "{{ BUILD_DIR }}/CCash/web/pm2.json"
         mode: 0700
-      when: WEB_ENABLED = true
+      when: WEB_ENABLED == true
 
 
     - name: Start webapp service
@@ -186,14 +181,14 @@
         chdir: "{{ BUILD_DIR }}/CCash/web"
         cmd: |
           pm2 start index.js --update-env --name 'CCashFrontend' -f
-      when: START_SERVICES = true and WEB_ENABLED = true
+      when: START_SERVICES == true and WEB_ENABLED == true
 
     - name: Enable web app on boot
       ansible.builtin.command:
         chdir: "{{ BUILD_DIR }}/CCash/web"
         cmd: |
           pm2 startup
-      when: START_ON_BOOT = true and START_SERVICES = true and WEB_ENABLED = true
+      when: START_ON_BOOT == true and START_SERVICES == true and WEB_ENABLED == true
 
     - name: Enable ccash on boot
       ansible.builtin.cron:
@@ -201,7 +196,7 @@
         special_time: reboot
         state: present
         job: '{{ BUILD_DIR }}/CCash/build/bank {{ ADMIN_A }} {{ SAVE_FREQ }} true'
-      when: START_ON_BOOT = true
+      when: START_ON_BOOT == true
 
     - name: Allow firewalld ports
       ansible.posix.firewalld:
@@ -214,4 +209,4 @@
         permanent: true
         port: 3000/tcp
         state: enabled
-      when: WEB_ENABLED = true
+      when: WEB_ENABLED == true

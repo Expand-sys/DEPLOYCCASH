@@ -10,6 +10,7 @@ In order to use the ansible playbook, clone the playbook to any pc with the abil
 ```git clone https://github.com/Expand-sys/DEPLOYCCASH```
 
 ```cd DEPLOYCCASH```
+
 ```ansible-galaxy install requirements.yml```
 
 ```ansible-playbook -i inventory main.ansible.yml -k```

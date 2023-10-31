@@ -215,3 +215,7 @@
         port: 3000/tcp
         state: enabled
       when: WEB_ENABLED == true
+    
+    - name: reload firewalld
+      ansible.builtin.command:
+        cmd: "firewall-cmd --reload"
